@@ -26,7 +26,7 @@ class Board
         std::vector<std::pair<int,int>> Valid_Moves();
 
         //gives valid move of a certain piece
-        std::vector<std::pair<int,int>> Valid_Moves(std::pair<int,int>);
+        std::vector<std::pair<int,int>> Valid_Moves(std::pair<int,int> piece);
 
     private:
         static const int rows = 8;

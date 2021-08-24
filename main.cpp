@@ -10,6 +10,10 @@ int main()
 
     sf::RectangleShape yellow_box;
     yellow_box.setSize(sf::Vector2f(0,0));
+
+
+   
+
     while(window.isOpen())
     {
         sf::Event event;

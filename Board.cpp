@@ -125,3 +125,152 @@ void Board::Select_Piece(sf::RenderWindow& window, int x_pos, int y_pos, sf::Rec
 
     
 }
+
+
+//returns all valid moves for the given turn
+std::vector<std::pair<int,int>> Board::Valid_Moves()
+{
+    std::vector<std::pair<int,int>> moves;
+    return moves;
+}
+
+
+//returns valid moves of one piece for the given turn
+std::vector<std::pair<int,int>> Board::Valid_Moves(std::pair<int,int> piece)
+{
+    std::vector<std::pair<int,int>> moves;
+    //if it's white turn
+    if(turn == true)
+    {
+        //if board_matrix[][] = -1 it is a normal piece
+        if(board_matrix[piece.first][piece.second] == -1)
+        {
+        
+            int capture_counter = 0;
+
+            //pushing back the moves if they are free squares and they are not kings or corner pieces
+            if(piece.second > 0 && board_matrix[piece.first - 1][piece.second - 1] == 0)
+            {
+                moves.push_back(std::pair<int,int>(piece.first - 1, piece.second - 1));
+            }
+
+            if( piece.second < 7 && board_matrix[piece.first - 1][piece.second + 1] == 0)
+            {
+                moves.push_back(std::pair<int,int>(piece.first - 1, piece.second + 1));
+            }
+            
+
+            //have not implemented double jumps
+            if( piece.second > 0 && board_matrix[piece.first - 1][piece.second - 1] == 1)
+            {
+                int i = piece.first - 2;
+                int j = piece.second - 2;
+                int line_counter = 1;
+
+                if(board_matrix[i][j] == 0 && capture_counter == 0)
+                {
+                    moves.clear();
+                    moves.push_back(std::pair<int,int>(i,j));
+                    capture_counter++;
+                }
+                else if(board_matrix[i][j] == 0 && capture_counter > 0)
+                {
+                    moves.push_back(std::pair<int,int>(i,j));
+                    capture_counter++;
+                }
+                
+
+
+            }
+            if( piece.second < 7 && board_matrix[piece.first-1][piece.second + 1] == 1)
+            {
+                int i = piece.first - 2;
+                int j = piece.second + 2;
+                int line_counter = 1;
+
+                if(board_matrix[i][j] == 0 && capture_counter == 0)
+                {
+                    moves.clear();
+                    moves.push_back(std::pair<int,int>(i,j));
+                    capture_counter++;
+                }
+                else if(board_matrix[i][j] == 0 && capture_counter > 0)
+                {
+                    moves.push_back(std::pair<int,int>(i,j));
+                    capture_counter++;
+                }
+            }
+            
+            
+        }
+
+
+    }
+
+    //for black
+    else
+    {
+        //if board_matrix[][] = -1 it is a normal piece
+        if(board_matrix[piece.first][piece.second] == 1)
+        {
+        
+            int capture_counter = 0;
+
+            //pushing back the moves if they are free squares and they are not kings or corner pieces
+            if(piece.second > 0 && board_matrix[piece.first + 1][piece.second - 1] == 0)
+            {
+                moves.push_back(std::pair<int,int>(piece.first + 1, piece.second - 1));
+            }
+            if( piece.second < 7 && board_matrix[piece.first + 1][piece.second + 1] == 0)
+            {
+                moves.push_back(std::pair<int,int>(piece.first + 1, piece.second + 1));
+            }
+            
+
+            //have not implemented double jumps
+            if( piece.second > 0 && board_matrix[piece.first + 1][piece.second - 1] == 1)
+            {
+                int i = piece.first + 2;
+                int j = piece.second - 2;
+                int line_counter = 1;
+
+                if(board_matrix[i][j] == 0 && capture_counter == 0)
+                {
+                    moves.clear();
+                    moves.push_back(std::pair<int,int>(i,j));
+                    capture_counter++;
+                }
+                else if(board_matrix[i][j] == 0 && capture_counter > 0)
+                {
+                    moves.push_back(std::pair<int,int>(i,j));
+                    capture_counter++;
+                }
+                
+
+
+            }
+            else if( piece.second < 7 && board_matrix[piece.first+1][piece.second + 1] == 1)
+            {
+                int i = piece.first + 2;
+                int j = piece.second + 2;
+                int line_counter = 1;
+
+                if(board_matrix[i][j] == 0 && capture_counter == 0)
+                {
+                    moves.clear();
+                    moves.push_back(std::pair<int,int>(i,j));
+                    capture_counter++;
+                }
+                else if(board_matrix[i][j] == 0 && capture_counter > 0)
+                {
+                    moves.push_back(std::pair<int,int>(i,j));
+                    capture_counter++;
+                }
+            }
+            
+            
+        }
+    }
+
+    return moves;
+}
