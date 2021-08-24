@@ -52,7 +52,7 @@ class Board
 
         //turn = true == white
         //turn = false == black
-        bool turn = true;
+        bool turn = false;
 
 };
 

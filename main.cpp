@@ -11,7 +11,12 @@ int main()
     sf::RectangleShape yellow_box;
     yellow_box.setSize(sf::Vector2f(0,0));
 
+    std::vector<std::pair<int,int>> temp = board.Valid_Moves();
 
+    for(int i = 0; i < temp.size(); ++i)
+    {
+        std::cout << temp.at(i).first << " " << temp.at(i).second << std::endl;
+    }
    
 
     while(window.isOpen())

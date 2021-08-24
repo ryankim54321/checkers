@@ -131,6 +131,14 @@ void Board::Select_Piece(sf::RenderWindow& window, int x_pos, int y_pos, sf::Rec
 std::vector<std::pair<int,int>> Board::Valid_Moves()
 {
     std::vector<std::pair<int,int>> moves;
+    for(int i = 0; i < rows; ++i)
+    {
+        for(int j = 0; j < cols; ++j)
+        {
+            std::vector<std::pair<int,int>> temp = Valid_Moves(std::pair<int,int>(i,j));
+            moves.insert(moves.end(),temp.begin(),temp.end());
+        }
+    }
     return moves;
 }
 
@@ -228,7 +236,7 @@ std::vector<std::pair<int,int>> Board::Valid_Moves(std::pair<int,int> piece)
             
 
             //have not implemented double jumps
-            if( piece.second > 0 && board_matrix[piece.first + 1][piece.second - 1] == 1)
+            if( piece.second > 0 && board_matrix[piece.first + 1][piece.second - 1] == -1)
             {
                 int i = piece.first + 2;
                 int j = piece.second - 2;
@@ -249,7 +257,7 @@ std::vector<std::pair<int,int>> Board::Valid_Moves(std::pair<int,int> piece)
 
 
             }
-            else if( piece.second < 7 && board_matrix[piece.first+1][piece.second + 1] == 1)
+            else if( piece.second < 7 && board_matrix[piece.first+1][piece.second + 1] == -1)
             {
                 int i = piece.first + 2;
                 int j = piece.second + 2;
