@@ -68,7 +68,7 @@ void Board::Draw(sf::RenderWindow& window)
         
 }
 
-void Board::Draw(sf::RenderWindow& window, sf::RectangleShape* yellow_box)
+void Board::Draw(sf::RenderWindow& window, sf::RectangleShape* yellow_box,std::vector<sf::CircleShape>* circle)
 {
    
     
@@ -79,6 +79,11 @@ void Board::Draw(sf::RenderWindow& window, sf::RectangleShape* yellow_box)
     {
         window.draw(black_sprite[i]);
         window.draw(white_sprite[i]);
+    }
+
+    for(int i = 0; i < circle->size(); ++i)
+    {
+        window.draw(circle->at(i));
     }
 
     //window.draw(b_pawn);
@@ -96,28 +101,47 @@ void Board::Draw(sf::RenderWindow& window, sf::RectangleShape* yellow_box)
 //return 1: highlights and shows dots
 //return 0: move the piece to designated place
 //return 2: no action (empty space)
-void Board::Select_Piece(sf::RenderWindow& window, int x_pos, int y_pos, sf::RectangleShape* yellow_box)
+void Board::Select_Piece(sf::RenderWindow& window, int x_pos, int y_pos, sf::RectangleShape* yellow_box,std::vector<sf::CircleShape>* circle)
 {
-    int board_matrix_x = x_pos / (width/rows);
-    int board_matrix_y = y_pos / (height/cols);
+    int board_matrix_x = y_pos / (width/rows);
+    int board_matrix_y = x_pos / (height/cols);
 
 
-
+    circle->clear();
     
-
+    std::cout << "Board_Matrix: " << board_matrix_x << " " << board_matrix_y << std::endl;
     //the given square contains a piece
-
-    if(board_matrix[board_matrix_y][board_matrix_x] != 0)
+    std::cout << "ARR: " << board_matrix[board_matrix_x][board_matrix_y] << std::endl;
+    if(board_matrix[board_matrix_x][board_matrix_y] != 0)
     {
 
+        //highlight 
         
         yellow_box->setSize(sf::Vector2f(width/rows,height/cols));
-        yellow_box->setPosition(board_matrix_x * (width/rows), board_matrix_y * (height/cols));
+        yellow_box->setPosition(board_matrix_y * (width/rows), board_matrix_x * (height/cols));
         yellow_box->setFillColor(sf::Color::Yellow);
 
         
+
+        std::vector<std::pair<int,int>> temp = Valid_Moves(std::pair<int,int>(board_matrix_x,board_matrix_y));
+        for(int i = 0; i < temp.size(); ++i)
+        {
+            std::cout << "temp: " << temp.at(i).first << " " << temp.at(i).second << std::endl;
+        }
+
+
+        for(int i = 0; i < temp.size(); ++i)
+        {
+            sf::CircleShape temp_circle(20);
+            temp_circle.setPosition(temp.at(i).second * (width/rows) + (width/rows/3), temp.at(i).first * (height/cols) + (height/cols/3) );
+            sf::Color color(192,192,192);
+            temp_circle.setFillColor(color);
+            circle->push_back(temp_circle);
+        }
         
     }
+
+    //selected square does not contain a piece
     else
     {
         yellow_box -> setSize(sf::Vector2f(0,0));

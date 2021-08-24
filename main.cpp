@@ -9,15 +9,18 @@ int main()
     board.Draw(window);
 
     sf::RectangleShape yellow_box;
-    yellow_box.setSize(sf::Vector2f(0,0));
 
+    std::vector<sf::CircleShape> circle;
+
+    yellow_box.setSize(sf::Vector2f(0,0));
+/*
     std::vector<std::pair<int,int>> temp = board.Valid_Moves();
 
     for(int i = 0; i < temp.size(); ++i)
     {
         std::cout << temp.at(i).first << " " << temp.at(i).second << std::endl;
     }
-   
+   */
 
     while(window.isOpen())
     {
@@ -37,7 +40,7 @@ int main()
                 if(event.mouseButton.button == sf::Mouse::Left)
                 {
                     
-                    board.Select_Piece(window,pos.x,pos.y, &yellow_box);
+                    board.Select_Piece(window,pos.x,pos.y, &yellow_box, &circle);
                     
                 }
             }
@@ -47,7 +50,7 @@ int main()
 
         if(yellow_box.getSize().x != 0 || yellow_box.getSize().y != 0)
         {
-            board.Draw(window,&yellow_box);
+            board.Draw(window,&yellow_box,&circle);
         }
         else
         {

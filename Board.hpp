@@ -16,11 +16,11 @@ class Board
 
         void Draw(sf::RenderWindow& window);
 
-        void Draw(sf::RenderWindow& window, sf::RectangleShape* yellow_box);
+        void Draw(sf::RenderWindow& window, sf::RectangleShape* yellow_box,std::vector<sf::CircleShape>* circle);
 
 
         //highlights the piece that the user clicks
-        void Select_Piece(sf::RenderWindow& window, int x_pos, int y_pos, sf::RectangleShape* yellow_box);
+        void Select_Piece(sf::RenderWindow& window, int x_pos, int y_pos, sf::RectangleShape* yellow_box, std::vector<sf::CircleShape>* circle);
 
         //gives all valid moves of the players turns
         std::vector<std::pair<int,int>> Valid_Moves();
