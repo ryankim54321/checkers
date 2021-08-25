@@ -28,6 +28,9 @@ class Board
         //gives valid move of a certain piece
         std::vector<std::pair<int,int>> Valid_Moves(std::pair<int,int> piece);
 
+        void Make_Move(int x_pos, int y_pos,std::pair<int,int> previous_selection);
+
+
     private:
         static const int rows = 8;
         static const int cols = 8;
@@ -52,7 +55,7 @@ class Board
 
         //turn = true == white
         //turn = false == black
-        bool turn = false;
+        bool turn = true;
 
 };
 
