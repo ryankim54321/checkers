@@ -30,6 +30,7 @@ class Board
 
         void Make_Move(int x_pos, int y_pos,std::pair<int,int> previous_selection);
 
+        std::vector<std::pair<int,int>> Check_Capture(std::pair<int,int> piece);
 
     private:
         static const int rows = 8;
@@ -56,7 +57,7 @@ class Board
         //turn = true == white
         //turn = false == black
         bool turn = true;
-
+        bool can_capture = false;
 };
 
 

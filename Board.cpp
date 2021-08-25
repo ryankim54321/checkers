@@ -172,8 +172,16 @@ std::vector<std::pair<int,int>> Board::Valid_Moves(std::pair<int,int> piece)
         //if board_matrix[][] = -1 it is a normal piece
         if(board_matrix[piece.first][piece.second] == -1)
         {
-        
+            
             int capture_counter = 0;
+            std::vector<std::pair<int,int>> capture_moves = Check_Capture(piece);
+
+            if(can_capture == true)
+            {
+                std::cout << "WHITE CAPTURE TRUE\n";
+                return capture_moves;
+            }
+
 
             //pushing back the moves if they are free squares and they are not kings or corner pieces
             if(piece.second > 0 && board_matrix[piece.first - 1][piece.second - 1] == 0)
@@ -188,45 +196,7 @@ std::vector<std::pair<int,int>> Board::Valid_Moves(std::pair<int,int> piece)
             
 
             //have not implemented double jumps
-            if( piece.second > 0 && board_matrix[piece.first - 1][piece.second - 1] == 1)
-            {
-                int i = piece.first - 2;
-                int j = piece.second - 2;
-                int line_counter = 1;
-
-                if(board_matrix[i][j] == 0 && capture_counter == 0)
-                {
-                    moves.clear();
-                    moves.push_back(std::pair<int,int>(i,j));
-                    capture_counter++;
-                }
-                else if(board_matrix[i][j] == 0 && capture_counter > 0)
-                {
-                    moves.push_back(std::pair<int,int>(i,j));
-                    capture_counter++;
-                }
-                
-
-
-            }
-            if( piece.second < 7 && board_matrix[piece.first-1][piece.second + 1] == 1)
-            {
-                int i = piece.first - 2;
-                int j = piece.second + 2;
-                int line_counter = 1;
-
-                if(board_matrix[i][j] == 0 && capture_counter == 0)
-                {
-                    moves.clear();
-                    moves.push_back(std::pair<int,int>(i,j));
-                    capture_counter++;
-                }
-                else if(board_matrix[i][j] == 0 && capture_counter > 0)
-                {
-                    moves.push_back(std::pair<int,int>(i,j));
-                    capture_counter++;
-                }
-            }
+            
             
             
         }
@@ -240,8 +210,15 @@ std::vector<std::pair<int,int>> Board::Valid_Moves(std::pair<int,int> piece)
         //if board_matrix[][] = -1 it is a normal piece
         if(board_matrix[piece.first][piece.second] == 1)
         {
-        
-            int capture_counter = 0;
+            std::vector<std::pair<int,int>> capture_moves = Check_Capture(piece);
+
+            if(can_capture == true)
+            {   
+                std::cout << "BLACK CAPTURE TRUE\n";
+                return capture_moves;
+            }
+
+            
 
             //pushing back the moves if they are free squares and they are not kings or corner pieces
             if(piece.second > 0 && board_matrix[piece.first + 1][piece.second - 1] == 0)
@@ -254,47 +231,6 @@ std::vector<std::pair<int,int>> Board::Valid_Moves(std::pair<int,int> piece)
             }
             
 
-            //have not implemented double jumps
-            if( piece.second > 0 && board_matrix[piece.first + 1][piece.second - 1] == -1)
-            {
-                int i = piece.first + 2;
-                int j = piece.second - 2;
-                int line_counter = 1;
-
-                if(board_matrix[i][j] == 0 && capture_counter == 0)
-                {
-                    moves.clear();
-                    moves.push_back(std::pair<int,int>(i,j));
-                    capture_counter++;
-                }
-                else if(board_matrix[i][j] == 0 && capture_counter > 0)
-                {
-                    moves.push_back(std::pair<int,int>(i,j));
-                    capture_counter++;
-                }
-                
-
-
-            }
-            else if( piece.second < 7 && board_matrix[piece.first+1][piece.second + 1] == -1)
-            {
-                int i = piece.first + 2;
-                int j = piece.second + 2;
-                int line_counter = 1;
-
-                if(board_matrix[i][j] == 0 && capture_counter == 0)
-                {
-                    moves.clear();
-                    moves.push_back(std::pair<int,int>(i,j));
-                    capture_counter++;
-                }
-                else if(board_matrix[i][j] == 0 && capture_counter > 0)
-                {
-                    moves.push_back(std::pair<int,int>(i,j));
-                    capture_counter++;
-                }
-            }
-            
             
         }
     }
@@ -378,5 +314,115 @@ void Board::Make_Move(int x_pos, int y_pos,std::pair<int,int> previous_selection
         }
     }
 
+
+}
+
+
+
+std::vector<std::pair<int,int>> Board::Check_Capture(std::pair<int,int> piece)
+{
+    //iterating through board matrix and checking to see if there is a chance that a piece capture can take place
+    std::vector<std::pair<int,int>> capture_pieces;
+    can_capture = false;
+    if(turn == true)
+    {
+        for(int i = 0; i < rows; ++i)
+        {
+            for(int j = 0; j < cols; ++j)
+            {
+                if(board_matrix[i][j] == -1)
+                {
+
+                    if( (i - 1) > 0 && (j - 1) > 0 && board_matrix[i - 1][j - 1] == 1)
+                    {   
+                    
+                        int x = i - 2;
+                        int y = j - 2;
+                        
+
+                        if(x >= 0 && y >= 0 && board_matrix[x][y] == 0)
+                        {
+
+                            can_capture = true;
+                            if(piece.first == i && piece.second == j)
+                            {
+                                capture_pieces.push_back(std::pair<int,int>(x,y));
+                            }
+                            
+                        }
+
+                    }
+
+                    if( (i - 1) > 0 && (j + 1)< 7 && board_matrix[i-1][j + 1] == 1)
+                    {
+                        int x = i - 2;
+                        int y = j + 2;
+                        
+
+                        if(x >= 0 && y <= 7 && board_matrix[x][y] == 0)
+                        {
+                            can_capture = true;
+                            if(piece.first == i && piece.second == j)
+                            {
+                                capture_pieces.push_back(std::pair<int,int>(x,y));
+                            }
+                        }
+
+                    }
+                }  
+            }
+        }
+    }
+    //if it is black's turn
+    else
+    {
+        for(int i = 0; i < rows; ++i)
+        {
+            for(int j = 0; j < cols; ++j)
+            {
+                if(board_matrix[i][j] == 1)
+                {
+
+                    if( (i + 1) < 7 && (j - 1) > 0 && board_matrix[i + 1][j - 1] == -1)
+                    {   
+                    
+                        int x = i + 2;
+                        int y = j - 2;
+                        
+
+                        if(x >= 0 && y >= 0 && board_matrix[x][y] == 0)
+                        {
+                            can_capture = true;
+                            if(piece.first == i && piece.second == j)
+                            {
+                                capture_pieces.push_back(std::pair<int,int>(x,y));
+                            }
+                        }
+
+                    }
+
+                    if((i + 1) < 7 && (j + 1) < 7 && board_matrix[i + 1][j + 1] == -1)
+                    {
+                        int x = i + 2;
+                        int y = j + 2;
+                        
+
+                        if(x >= 0 && y <= 7 && board_matrix[x][y] == 0)
+                        {
+                            can_capture = true;
+                            if(piece.first == i && piece.second == j)
+                            {
+                                capture_pieces.push_back(std::pair<int,int>(x,y));
+                            }
+                        }
+
+                    }
+                }  
+            }
+        }
+    }
+
+
+    return capture_pieces;
 
 }
