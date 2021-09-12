@@ -32,12 +32,6 @@ class Board
 
         std::vector<std::pair<int,int>> Check_Capture(std::pair<int,int> piece);
 
-
-        //for debugging
-        void Print_Matrix();
-
-        void Print_Sprite_Locations();
-
     private:
         static const int rows = 8;
         static const int cols = 8;
@@ -57,8 +51,11 @@ class Board
 
         sf::Texture t1,t2,t3,t4,t5;
         sf::Sprite board;
-        sf::Sprite white_sprite[12];
-        sf::Sprite black_sprite[12];
+        //sf::Sprite white_sprite[12];
+        //sf::Sprite black_sprite[12];
+
+        std::vector<sf::Sprite> white_sprite;
+        std::vector<sf::Sprite> black_sprite;
 
         //turn = true == white
         //turn = false == black

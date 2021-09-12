@@ -22,8 +22,15 @@ Board::Board()
     //setting textures for the pieces
     for(int i = 0; i < 12; ++i)
     {
-        white_sprite[i].setTexture(t5);
-        black_sprite[i].setTexture(t3);
+        //white_sprite[i].setTexture(t5);
+        //black_sprite[i].setTexture(t3);
+        sf::Sprite sprite;
+        sprite.setTexture(t5);
+        white_sprite.push_back(sprite);
+
+        sf::Sprite bsprite;
+        bsprite.setTexture(t3);
+        black_sprite.push_back(bsprite);
     }
     
 
@@ -56,10 +63,20 @@ void Board::Draw(sf::RenderWindow& window)
     window.clear();
     window.draw(board);
 
-    for(int i = 0; i < 12; ++i)
+    /*for(int i = 0; i < 12; ++i)
     {
         window.draw(black_sprite[i]);
         window.draw(white_sprite[i]);
+    }*/
+
+    for(int i = 0; i < white_sprite.size(); ++i)
+    {
+        window.draw(white_sprite[i]);
+    }
+
+    for(int j = 0; j < black_sprite.size(); ++j)
+    {
+        window.draw(black_sprite[j]);
     }
 
     //window.draw(b_pawn);
@@ -75,12 +92,15 @@ void Board::Draw(sf::RenderWindow& window, sf::RectangleShape* yellow_box,std::v
     window.clear();
     window.draw(board);
     window.draw(*yellow_box);
-    for(int i = 0; i < 12; ++i)
+    for(int i = 0; i < white_sprite.size(); ++i)
     {
-        window.draw(black_sprite[i]);
         window.draw(white_sprite[i]);
     }
 
+    for(int j = 0; j < black_sprite.size(); ++j)
+    {
+        window.draw(black_sprite[j]);
+    }
     for(int i = 0; i < circle->size(); ++i)
     {
         window.draw(circle->at(i));
@@ -178,18 +198,18 @@ std::vector<std::pair<int,int>> Board::Valid_Moves(std::pair<int,int> piece)
 
             if(can_capture == true)
             {
-                std::cout << "WHITE CAPTURE TRUE\n";
+                
                 return capture_moves;
             }
 
 
             //pushing back the moves if they are free squares and they are not kings or corner pieces
-            if(piece.second > 0 && board_matrix[piece.first - 1][piece.second - 1] == 0)
+            if(piece.first > 0 && piece.second > 0 && board_matrix[piece.first - 1][piece.second - 1] == 0)
             {
                 moves.push_back(std::pair<int,int>(piece.first - 1, piece.second - 1));
             }
 
-            if( piece.second < 7 && board_matrix[piece.first - 1][piece.second + 1] == 0)
+            if(piece.first > 0 && piece.second < 7 && board_matrix[piece.first - 1][piece.second + 1] == 0)
             {
                 moves.push_back(std::pair<int,int>(piece.first - 1, piece.second + 1));
             }
@@ -221,11 +241,11 @@ std::vector<std::pair<int,int>> Board::Valid_Moves(std::pair<int,int> piece)
             
 
             //pushing back the moves if they are free squares and they are not kings or corner pieces
-            if(piece.second > 0 && board_matrix[piece.first + 1][piece.second - 1] == 0)
+            if(piece.first < 7 && piece.second > 0 && board_matrix[piece.first + 1][piece.second - 1] == 0)
             {
                 moves.push_back(std::pair<int,int>(piece.first + 1, piece.second - 1));
             }
-            if( piece.second < 7 && board_matrix[piece.first + 1][piece.second + 1] == 0)
+            if(piece.first < 7 && piece.second < 7 && board_matrix[piece.first + 1][piece.second + 1] == 0)
             {
                 moves.push_back(std::pair<int,int>(piece.first + 1, piece.second + 1));
             }
@@ -244,12 +264,12 @@ void Board::Make_Move(int x_pos, int y_pos,std::pair<int,int> previous_selection
 
     int previous_x = previous_selection.second / (width/rows);
     int previous_y = previous_selection.first/ (height/cols);
-
+    std::cout << "PREV X Y: " << previous_x << " " << previous_y << std::endl;
     int board_matrix_x = y_pos / (width/rows);
     int board_matrix_y = x_pos / (height/cols);
 
     std::vector<std::pair<int,int>> moves = Valid_Moves(std::pair<int,int>(previous_x,previous_y));
-
+    
     for(int i = 0; i < moves.size(); ++i)
     {
 
@@ -265,21 +285,63 @@ void Board::Make_Move(int x_pos, int y_pos,std::pair<int,int> previous_selection
             {
                 board_matrix[board_matrix_x][board_matrix_y] = -1;
 
-                for(int i = 0 ; i < 12; ++i)
+                for(int i = 0 ; i < white_sprite.size(); ++i)
                 {
                     //std::cout << "WHITE SPRITE: "<< black_sprite[i].getPosition().x << " " << black_sprite[i].getPosition().y  << std::endl;
-                    //std::cout << "POS: " << previous_selection.first << " " << previous_selection.second << std::endl;
+                    
 
                     //std::cout << "GLOBAL BOUNDS : " << black_sprite[i].getGlobalBounds().contains(sf::Vector2f(previous_selection.second,previous_selection.first)) << std::endl;
-                    if(white_sprite[i].getGlobalBounds().contains(sf::Vector2f(previous_selection.first,previous_selection.second)))
+                    if(white_sprite[i].getGlobalBounds().contains(sf::Vector2f(previous_selection.first + 10,previous_selection.second)))
                     {
-                        
+                        std::cout << "WHITESPRITEFOUND\n";
                         //int dx = x_pos - white_sprite[i].getPosition().x;
                         //int dy = y_pos - white_sprite[i].getPosition().y;
                         int dx = board_matrix_x * (width/rows);
                         int dy = board_matrix_y * (height/cols);
                         
                         white_sprite[i].setPosition(sf::Vector2f(dy + 10,dx));
+
+                        //have to remove the black sprite if it is can_capture is true
+                        if(can_capture == true)
+                        {
+                            if(previous_x > 0 && previous_y > 0 && board_matrix[previous_x - 1][previous_y - 1] == 1)
+                            {
+                                
+                                board_matrix[previous_x - 1][previous_y - 1] = 0;
+                                int cx = (previous_x - 1) * (width/rows);
+                                int cy = (previous_y - 1) * (height/cols);
+                                
+                                for(int i = 0; i < black_sprite.size(); ++i)
+                                {
+                                    
+                                    
+                                    if(black_sprite[i].getGlobalBounds().contains(sf::Vector2f(cy + 10,cx)))
+                                    {
+                                        
+                                        black_sprite.erase(black_sprite.begin() + i);
+                                    }
+                                } 
+                            }
+                            else if(previous_x > 0 && previous_y < 7 && board_matrix[previous_x - 1][previous_y + 1] == 1)
+                            {
+                                
+                                board_matrix[previous_x - 1][previous_y + 1] = 0;
+                                int cx = (previous_x - 1) * (width/rows);
+                                int cy = (previous_y + 1) * (height/cols);
+                                
+                                for(int i = 0; i < black_sprite.size(); ++i)
+                                {
+                                    if(black_sprite[i].getGlobalBounds().contains(sf::Vector2f(cy + 10, cx)))
+                                    {
+                                        
+                                        black_sprite.erase(black_sprite.begin() + i);
+                                    }
+                                } 
+                            }
+
+                            can_capture = false;
+                        }
+
                     }
                 }
                 turn = false;
@@ -288,21 +350,53 @@ void Board::Make_Move(int x_pos, int y_pos,std::pair<int,int> previous_selection
             else
             {
                 board_matrix[board_matrix_x][board_matrix_y] = 1;
-                for(int i = 0 ; i < 12; ++i)
+                for(int i = 0 ; i < black_sprite.size(); ++i)
                 {
                     //std::cout << "WHITE SPRITE: "<< black_sprite[i].getPosition().x << " " << black_sprite[i].getPosition().y  << std::endl;
                     //std::cout << "POS: " << previous_selection.first << " " << previous_selection.second << std::endl;
 
                     //std::cout << "GLOBAL BOUNDS : " << black_sprite[i].getGlobalBounds().contains(sf::Vector2f(previous_selection.second,previous_selection.first)) << std::endl;
-                    if(black_sprite[i].getGlobalBounds().contains(sf::Vector2f(previous_selection.first,previous_selection.second)))
+                    if(black_sprite[i].getGlobalBounds().contains(sf::Vector2f(previous_selection.first + 10,previous_selection.second)))
                     {
-                        
+                        std::cout << "BLACKSPRITEFOUND\n";
                         //int dx = x_pos - white_sprite[i].getPosition().x;
                         //int dy = y_pos - white_sprite[i].getPosition().y;
                         int dx = board_matrix_x * (width/rows);
                         int dy = board_matrix_y * (height/cols);
                         
                         black_sprite[i].setPosition(sf::Vector2f(dy + 10,dx));
+                        
+                        if(can_capture == true)
+                        {
+                            if(previous_x < 7 && previous_y > 0 && board_matrix[previous_x + 1][previous_y - 1] == -1)
+                            {
+                                board_matrix[previous_x + 1][previous_y - 1] = 0;
+                                int cx = (previous_x + 1) * (width/rows);
+                                int cy = (previous_y - 1) * (height/cols);
+                                for(int i = 0; i < white_sprite.size(); ++i)
+                                {
+                                    if(white_sprite[i].getGlobalBounds().contains(sf::Vector2f(cy + 10,cx)))
+                                    {
+                                        white_sprite.erase(white_sprite.begin() + i);
+                                    }
+                                } 
+                            }
+                            else if(previous_x < 7 && previous_y < 7 && board_matrix[previous_x + 1][previous_y + 1] == -1)
+                            {
+                                board_matrix[previous_x + 1][previous_y + 1] = 0;
+                                int cx = (previous_x + 1) * (width/rows);
+                                int cy = (previous_y + 1) * (height/cols);
+                                for(int i = 0; i < white_sprite.size(); ++i)
+                                {
+                                    if(white_sprite[i].getGlobalBounds().contains(sf::Vector2f(cy + 10,cx)))
+                                    {
+                                        white_sprite.erase(white_sprite.begin() + i);
+                                    }
+                                } 
+                            }
+
+                            can_capture = false;
+                        }
                     }
                 }
                 turn = true;
@@ -314,7 +408,6 @@ void Board::Make_Move(int x_pos, int y_pos,std::pair<int,int> previous_selection
         }
     }
 
-    Print_Matrix();
 
 }
 
@@ -425,26 +518,5 @@ std::vector<std::pair<int,int>> Board::Check_Capture(std::pair<int,int> piece)
 
 
     return capture_pieces;
-
-}
-
-
-void Board::Print_Matrix()
-{
-    for(int i = 0; i < 8; ++i)
-    {
-        for(int j = 0 ; j < 8; ++j)
-        {
-            std::cout << board_matrix[i][j] << "  ";
-        }
-        std::cout << std::endl;
-    }
-
-    std::cout << std::endl << std::endl;
-}
-
-
-void Board::Print_Sprite_Locations()
-{
 
 }
