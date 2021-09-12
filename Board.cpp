@@ -178,7 +178,7 @@ std::vector<std::pair<int,int>> Board::Valid_Moves(std::pair<int,int> piece)
 
             if(can_capture == true)
             {
-                std::cout << "WHITE CAPTURE TRUE\n";
+                
                 return capture_moves;
             }
 
