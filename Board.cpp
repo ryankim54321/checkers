@@ -19,31 +19,30 @@ Board::Board()
     //setting board sprite
     board.setTexture(t1);
 
-    //setting textures for the pieces
-    for(int i = 0; i < 12; ++i)
-    {
-        white_sprite[i].setTexture(t5);
-        black_sprite[i].setTexture(t3);
-    }
     
-
-    //placing pieaces on board
-    int black_counter = 0;
-    int white_counter = 0;
 
     for(int i = 0 ; i < rows; ++i)
     {
         for(int j = 0; j < cols; ++j)
         {
+
+            
             if(board_matrix[i][j] == 1) //black piece
             {
-                black_sprite[black_counter].setPosition( (width/cols) * j + 10, (height/rows) * i);
-                black_counter++;
+
+                
+                sf::Sprite sprite;
+                sprite.setTexture(t3);
+                sprite.setPosition( (width/cols) * j + 10, (height/rows) * i);
+                black_sprite.insert({{i,j},sprite});
             }
             else if(board_matrix[i][j] == -1) //white pieces
             {
-                white_sprite[white_counter].setPosition( (width/cols) * j + 10, (height/rows) * i);
-                white_counter++;
+
+                sf::Sprite sprite;
+                sprite.setTexture(t5);
+                sprite.setPosition( (width/cols) * j + 10, (height/rows) * i);
+                white_sprite.insert({{i,j},sprite});
             }
         }
     }
@@ -56,10 +55,14 @@ void Board::Draw(sf::RenderWindow& window)
     window.clear();
     window.draw(board);
 
-    for(int i = 0; i < 12; ++i)
+    for (std::map<std::pair<int,int>,sf::Sprite>::iterator it=white_sprite.begin(); it!=white_sprite.end(); ++it)
     {
-        window.draw(black_sprite[i]);
-        window.draw(white_sprite[i]);
+        window.draw(it->second);
+    }
+
+    for (std::map<std::pair<int,int>,sf::Sprite>::iterator it=black_sprite.begin(); it!=black_sprite.end(); ++it)
+    {
+        window.draw(it->second);
     }
 
     //window.draw(b_pawn);
@@ -75,10 +78,14 @@ void Board::Draw(sf::RenderWindow& window, sf::RectangleShape* yellow_box,std::v
     window.clear();
     window.draw(board);
     window.draw(*yellow_box);
-    for(int i = 0; i < 12; ++i)
+    for (std::map<std::pair<int,int>,sf::Sprite>::iterator it=white_sprite.begin(); it!=white_sprite.end(); ++it)
     {
-        window.draw(black_sprite[i]);
-        window.draw(white_sprite[i]);
+        window.draw(it->second);
+    }
+
+    for (std::map<std::pair<int,int>,sf::Sprite>::iterator it=black_sprite.begin(); it!=black_sprite.end(); ++it)
+    {
+        window.draw(it->second);
     }
 
     for(int i = 0; i < circle->size(); ++i)
@@ -259,52 +266,61 @@ void Board::Make_Move(int x_pos, int y_pos,std::pair<int,int> previous_selection
             //it is valid and now i am making the move
             //first updating the game matrix
             board_matrix[previous_x][previous_y] = 0;
-
+            Print_Sprite_Locations();
             //if white make the number -1
             if(turn == true)
             {
                 board_matrix[board_matrix_x][board_matrix_y] = -1;
+                
+                std::map<std::pair<int,int>,sf::Sprite>::iterator it = white_sprite.find({previous_x,previous_y});
 
-                for(int i = 0 ; i < 12; ++i)
+                if(it != white_sprite.end()) //if it is found continue
                 {
-                    //std::cout << "WHITE SPRITE: "<< black_sprite[i].getPosition().x << " " << black_sprite[i].getPosition().y  << std::endl;
-                    //std::cout << "POS: " << previous_selection.first << " " << previous_selection.second << std::endl;
-
-                    //std::cout << "GLOBAL BOUNDS : " << black_sprite[i].getGlobalBounds().contains(sf::Vector2f(previous_selection.second,previous_selection.first)) << std::endl;
-                    if(white_sprite[i].getGlobalBounds().contains(sf::Vector2f(previous_selection.first,previous_selection.second)))
-                    {
-                        
-                        //int dx = x_pos - white_sprite[i].getPosition().x;
-                        //int dy = y_pos - white_sprite[i].getPosition().y;
                         int dx = board_matrix_x * (width/rows);
                         int dy = board_matrix_y * (height/cols);
                         
-                        white_sprite[i].setPosition(sf::Vector2f(dy + 10,dx));
-                    }
+                        it -> second.setPosition(sf::Vector2f(dy + 10,dx));
+
+                        //going to erase and insert new map node to have updated coords
+                        sf::Sprite temp = it -> second;
+                        white_sprite.erase(it);
+                        white_sprite.insert({{board_matrix_x,board_matrix_y},temp});
                 }
+                else
+                {
+                    std::cout << "white_piece not found in map: " << board_matrix_x << " " << board_matrix_y << std::endl;
+                }
+
+
                 turn = false;
                 break;
+                
             }
             else
             {
                 board_matrix[board_matrix_x][board_matrix_y] = 1;
-                for(int i = 0 ; i < 12; ++i)
-                {
-                    //std::cout << "WHITE SPRITE: "<< black_sprite[i].getPosition().x << " " << black_sprite[i].getPosition().y  << std::endl;
-                    //std::cout << "POS: " << previous_selection.first << " " << previous_selection.second << std::endl;
+                
+                std::map<std::pair<int,int>,sf::Sprite>::iterator it = black_sprite.find({previous_x,previous_y});
 
-                    //std::cout << "GLOBAL BOUNDS : " << black_sprite[i].getGlobalBounds().contains(sf::Vector2f(previous_selection.second,previous_selection.first)) << std::endl;
-                    if(black_sprite[i].getGlobalBounds().contains(sf::Vector2f(previous_selection.first,previous_selection.second)))
-                    {
-                        
-                        //int dx = x_pos - white_sprite[i].getPosition().x;
-                        //int dy = y_pos - white_sprite[i].getPosition().y;
-                        int dx = board_matrix_x * (width/rows);
-                        int dy = board_matrix_y * (height/cols);
-                        
-                        black_sprite[i].setPosition(sf::Vector2f(dy + 10,dx));
-                    }
+                if(it != black_sprite.end()) //if it is found continue
+                {
+                    int dx = board_matrix_x * (width/rows);
+                    int dy = board_matrix_y * (height/cols);
+                    
+                    it -> second.setPosition(sf::Vector2f(dy + 10,dx));
+                    //have to update key so that it corresponds to the new position
+                    sf::Sprite temp = it -> second;
+                    black_sprite.erase(it);
+                    black_sprite.insert({{board_matrix_x,board_matrix_y},temp});
+                    
+
                 }
+                else
+                {
+                    std::cout << "black_piece not found in map: " << board_matrix_x << " " << board_matrix_y << std::endl;
+                }
+
+
                 turn = true;
                 break;
             }
@@ -446,5 +462,14 @@ void Board::Print_Matrix()
 
 void Board::Print_Sprite_Locations()
 {
+    for (std::map<std::pair<int,int>,sf::Sprite>::iterator it=white_sprite.begin(); it!=white_sprite.end(); ++it)
+    {
+        std::cout << "white position: " << it->first.first << " " << it -> first.second << std::endl;
+    }
+
+    for (std::map<std::pair<int,int>,sf::Sprite>::iterator it=black_sprite.begin(); it!=black_sprite.end(); ++it)
+    {
+        std::cout << "black position: " << it->first.first << " " << it -> first.second << std::endl;
+    }
 
 }

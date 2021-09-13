@@ -43,7 +43,7 @@ class Board
         static const int cols = 8;
         int height;
         int width;
-        int board_matrix[8][8] = 
+        /*int board_matrix[8][8] = 
             {
                 {0,1,0,1,0,1,0,1},
                 {1,0,1,0,1,0,1,0},
@@ -54,11 +54,22 @@ class Board
                 {0,-1,0,-1,0,-1,0,-1},
                 {-1,0,-1,0,-1,0,-1,0}
             };
-
+        */
+        int board_matrix[8][8] = {0,1,0,1,0,1,0,1,
+                                1,0,1,0,1,0,1,0,
+                                0,1,0,1,0,1,0,1,
+                                0,0,0,0,0,0,0,0,
+                                0,0,0,0,0,0,0,0,
+                                -1,0,-1,0,-1,0,-1,0,
+                                0,-1,0,-1,0,-1,0,-1,
+                                -1,0,-1,0,-1,0,-1,0};
         sf::Texture t1,t2,t3,t4,t5;
         sf::Sprite board;
-        sf::Sprite white_sprite[12];
-        sf::Sprite black_sprite[12];
+        //sf::Sprite white_sprite[12];
+        //sf::Sprite black_sprite[12];
+
+        std::map<std::pair<int,int>, sf::Sprite> white_sprite;
+        std::map<std::pair<int,int>, sf::Sprite> black_sprite;
 
         //turn = true == white
         //turn = false == black
